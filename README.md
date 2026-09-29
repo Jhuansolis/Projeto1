@@ -1,6 +1,6 @@
 # Projeto 1 — Redes Neurais para reconhecimento de dígitos
 
-Projeto desenvolvido para a disciplina **MS571**. Este repositório contém a implementação da **Parte 1 do Projeto 1**, cujo objetivo é construir e analisar uma rede neural regularizada para reconhecer dígitos manuscritos.
+Projeto desenvolvido para a disciplina **MS571**. Este repositório contém as **Partes I e II do Projeto 1**: implementação de uma rede neural regularizada para reconhecer dígitos manuscritos e avaliação com conjuntos de treino, validação e teste.
 
 A solução segue o algoritmo apresentado no material didático. As etapas centrais da rede — propagação direta, função de custo, retropropagação e descida do gradiente — foram implementadas explicitamente, sem o uso de classificadores prontos. O `scipy.optimize.minimize` é utilizado apenas no experimento com gradiente conjugado, conforme permitido pelo enunciado.
 
@@ -12,7 +12,7 @@ A solução segue o algoritmo apresentado no material didático. As etapas centr
 
 ## Situação atual do projeto
 
-A Parte 1 está implementada no notebook [`Parte1_Projeto1_Redes_Neurais.ipynb`](Parte1_Projeto1_Redes_Neurais.ipynb). Até o momento, foram desenvolvidas as seguintes etapas:
+A Parte I está implementada em [`Parte1_Projeto1_Redes_Neurais.ipynb`](Parte1_Projeto1_Redes_Neurais.ipynb), com as seguintes etapas:
 
 - leitura dos dados a partir de `ex3data1.mat` ou dos arquivos CSV;
 - inspeção das dimensões, classes e distribuição dos dados;
@@ -32,6 +32,8 @@ A Parte 1 está implementada no notebook [`Parte1_Projeto1_Redes_Neurais.ipynb`]
 - visualização dos 25 filtros aprendidos pela camada escondida;
 - discussão crítica dos métodos, resultados e limitações;
 - fundamentação teórica e bibliografia.
+
+A Parte II está implementada em [`Parte2_Projeto1_Selecao_Modelo.ipynb`](Parte2_Projeto1_Selecao_Modelo.ipynb). Ela divide os dados de forma estratificada em treino (60%), validação (20%) e teste (20%); calcula erros sem o termo de regularização; gera uma curva de aprendizado; escolhe `λ` entre dez valores pelo erro de validação; e avalia o modelo selecionado no teste. Os pesos são reinicializados depois da divisão para evitar vazamento dos dados de validação e teste.
 
 ## Dados e arquitetura
 
@@ -60,19 +62,24 @@ Na execução completa usada para validar o notebook, foram obtidos os seguintes
 |---|---|---:|
 | Checagem do gradiente | Rede pequena `3 → 5 → 3`, `λ = 0,7` | Diferença relativa `2,216 × 10⁻¹⁰` |
 | Descida do gradiente | `λ = 1`, `α = 0,8`, 300 iterações | Acurácia de ajuste `91,92%` |
-| Gradiente conjugado | `λ = 1`, limite de 400 iterações | Acurácia de ajuste `99,52%` |
+| Gradiente conjugado | `λ = 1`, limite de 400 iterações | Acurácia de ajuste `99,48%` |
 
 A diferença relativa da checagem ficou muito abaixo do limite adotado de `10⁻⁷`, fornecendo evidência numérica de que o gradiente analítico calculado pelo backpropagation está correto.
 
-Essas acurácias foram calculadas sobre os mesmos exemplos utilizados no treinamento. Portanto, são **acurácias de ajuste**, e não estimativas de desempenho em dados novos. A separação entre treino, validação e teste, assim como a seleção adequada de `λ`, pertence à Parte 2 do projeto.
+Essas acurácias foram calculadas sobre os mesmos exemplos utilizados no treinamento. Portanto, são **acurácias de ajuste**, e não estimativas de desempenho em dados novos. A Parte II fornece a avaliação em exemplos separados.
+
+## Resultados da Parte II
+
+Na execução completa com `SEED = 2026`, o conjunto foi dividido em **3.000 imagens de treino, 1.000 de validação e 1.000 de teste**. O menor erro de validação na grade foi obtido com **`λ = 1`**. Nesta execução, o modelo alcançou **92,40% de acurácia no teste**, com erro sem regularização **`J_teste = 0,49011`**. Consulte a tabela e os gráficos do notebook da Parte II para os demais valores e para a discussão das limitações.
 
 Pequenas diferenças numéricas podem ocorrer em outra máquina ou versão das bibliotecas. O tempo de execução também depende do processador utilizado.
 
-## Estrutura recomendada
+## Estrutura do repositório
 
 ```text
 Projeto1/
 ├── Parte1_Projeto1_Redes_Neurais.ipynb
+├── Parte2_Projeto1_Selecao_Modelo.ipynb
 ├── ex3data1.mat
 ├── requirements.txt
 ├── README.md
@@ -101,11 +108,11 @@ As dependências estão listadas em `requirements.txt`.
 Para baixar pelo Git, use no PowerShell:
 
 ```powershell
-git clone URL_DO_REPOSITORIO
+git clone https://github.com/Jhuansolis/Projeto1.git
 cd Projeto1
 ```
 
-Substitua `URL_DO_REPOSITORIO` pela URL exibida no botão **Code** do GitHub. Outra opção é baixar o repositório como ZIP e extrair os arquivos.
+Outra opção é baixar o repositório como ZIP e extrair os arquivos.
 
 ### 2. Crie o ambiente virtual
 
@@ -161,9 +168,9 @@ Sem ativar o ambiente:
 
 Se ele não aparecer, pressione `Ctrl + Shift + P`, escolha **Python: Select Interpreter**, clique em **Enter interpreter path** e selecione manualmente o arquivo acima.
 
-### 6. Execute o notebook completo
+### 6. Execute os notebooks completos
 
-Confirme que `ex3data1.mat` está na mesma pasta do notebook ou dentro de uma subpasta chamada `dados`. Depois, no notebook, clique em:
+Confirme que `ex3data1.mat` está na mesma pasta dos notebooks ou dentro de uma subpasta chamada `dados`. Abra primeiro a Parte I e depois a Parte II; em cada notebook, clique em:
 
 ```text
 Run All / Executar Tudo
@@ -176,27 +183,27 @@ SEED = 2026
 FAST_MODE = False
 ```
 
-Na implementação, `FAST_MODE` é obtido da variável de ambiente `NN_FAST_MODE`. Sem essa variável, o modo completo é usado automaticamente. Ele executa os experimentos com os 5.000 exemplos e inclui o gradiente conjugado com limite de até 400 iterações.
+Na Parte I, `FAST_MODE = False` está definido diretamente na célula de configuração. Na Parte II, o valor é obtido da variável de ambiente `NN_FAST_MODE`, cujo padrão também é o modo completo. A Parte I usa os 5.000 exemplos no ajuste e testa o gradiente conjugado com limite de até 400 iterações; a Parte II usa a divisão 60/20/20, oito tamanhos na curva e os dez valores de `λ` do enunciado.
 
 ### 7. Faça primeiro um teste rápido, se necessário
 
-Para verificar a instalação sem executar toda a grade experimental, altere temporariamente na célula de configuração:
+Para verificar a instalação da Parte I sem executar toda a grade experimental, altere temporariamente na célula de configuração:
 
 ```python
 FAST_MODE = True
 ```
 
-Execute todas as células. Nesse modo, o notebook usa até 1.000 exemplos e uma grade reduzida de experimentos. Para produzir os resultados finais, restaure a linha original:
+Execute todas as células. Nesse modo, o notebook usa até 1.000 exemplos e uma grade reduzida de experimentos. Para produzir os resultados finais da Parte I, restaure a linha original:
 
 ```python
-FAST_MODE = os.getenv("NN_FAST_MODE", "0") == "1"
+FAST_MODE = False
 ```
 
-e execute novamente com `FAST_MODE = False` ou sem definir `NN_FAST_MODE`.
+e execute novamente. Na Parte II, deixe `NN_FAST_MODE` indefinida para o modo completo; somente para teste rápido, defina `NN_FAST_MODE=1` no ambiente antes de iniciar o kernel. O teste rápido reduz os pontos da curva, a grade de `λ` e o número de iterações, logo seus resultados não são os da entrega.
 
 ## Ordem dos experimentos
 
-Ao executar todas as células, o notebook realiza:
+Ao executar todas as células da Parte I, o notebook realiza:
 
 1. leitura e validação dos dados;
 2. exibição da distribuição das classes e de 25 imagens;
@@ -209,6 +216,8 @@ Ao executar todas as células, o notebook realiza:
 9. geração das tabelas e dos gráficos comparativos;
 10. visualização dos 25 filtros da primeira camada;
 11. síntese automática e discussão crítica dos resultados.
+
+Na Parte II, as células realizam a divisão estratificada, a curva de aprendizado, a seleção de `λ` por validação, a avaliação no teste e a análise dos resultados. Os notebooks podem ser executados de forma independente, desde que o arquivo de dados esteja presente.
 
 ## Problemas comuns
 
@@ -266,10 +275,6 @@ git push -u origin nome-da-tarefa
 Em seguida, abra um *Pull Request* no GitHub para que outro integrante revise a alteração antes de integrá-la à branch principal.
 
 Evite que duas pessoas editem simultaneamente o mesmo notebook, pois arquivos `.ipynb` são documentos JSON e podem gerar conflitos difíceis de resolver. Antes dos commits intermediários, é útil limpar as saídas do notebook. Para a entrega final, uma pessoa deve executar todas as células na ordem e salvar o notebook com as saídas definitivas.
-
-## Próxima etapa
-
-A Parte 2 deverá reutilizar as funções e a arquitetura implementadas aqui, mas deverá reinicializar os pesos e treinar novamente após dividir os dados em treino, validação e teste. Os pesos ajustados com todas as 5.000 imagens na Parte 1 não devem ser usados na avaliação da Parte 2, pois isso causaria vazamento de dados.
 
 ## Referências principais
 
